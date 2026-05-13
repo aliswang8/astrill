@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Astrill VPN — 技术领先的全球加密网络</title>
+<style>
+  /* ============ Reset & Base ============ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: #05070d;
+    color: #e6edf3;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ============ Background Aurora ============ */
+  .aurora {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(60% 40% at 12% 10%, rgba(56,189,248,0.18), transparent 60%),
+      radial-gradient(50% 35% at 88% 18%, rgba(139,92,246,0.20), transparent 60%),
+      radial-gradient(55% 40% at 50% 95%, rgba(16,185,129,0.16), transparent 60%),
+      linear-gradient(180deg, #05070d 0%, #0a0f1c 100%);
+  }
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .35;
+    background-image:
+      linear-gradient(rgba(120,160,255,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,160,255,0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  }
+
+  /* ============ Navigation ============ */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(8, 12, 22, 0.65);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    font-weight: 800; font-size: 22px; letter-spacing: 1px;
+    background: linear-gradient(135deg, #38bdf8, #a78bfa);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .logo .dot { color: #34d399; -webkit-text-fill-color: #34d399; }
+  .nav-links { display: flex; gap: 36px; font-size: 14px; color: #94a3b8; }
+  .nav-links a { transition: color .2s; }
+  .nav-links a:hover { color: #e6edf3; }
+  .badge {
+    font-size: 12px; padding: 6px 14px; border-radius: 999px;
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid rgba(56, 189, 248, 0.30);
+    color: #7dd3fc;
+  }
+
+  /* ============ Layout ============ */
+  section { padding: 110px 0; position: relative; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: #67e8f9; margin-bottom: 18px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(103, 232, 249, 0.08);
+    border: 1px solid rgba(103, 232, 249, 0.20);
+  }
+  h1 {
+    font-size: clamp(40px, 6vw, 76px);
+    font-weight: 800; line-height: 1.1; letter-spacing: -1px;
+    margin-bottom: 28px;
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #c084fc 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h2 {
+    font-size: clamp(30px, 4vw, 48px);
+    font-weight: 800; line-height: 1.2; margin-bottom: 20px; letter-spacing: -0.5px;
+  }
+  h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #f1f5f9; }
+  .lead { font-size: 18px; color: #94a3b8; max-width: 720px; margin-bottom: 28px; }
+
+  /* ============ Hero ============ */
+  .hero { padding: 140px 0 80px; text-align: center; }
+  .hero .lead { margin-left: auto; margin-right: auto; font-size: 20px; color: #cbd5e1; }
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    margin-top: 80px;
+    padding: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+  }
+  .hero-stat .num {
+    font-size: 40px; font-weight: 800;
+    background: linear-gradient(135deg, #34d399, #38bdf8);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero-stat .label { font-size: 14px; color: #94a3b8; margin-top: 4px; }
+
+  /* ============ Feature Grid ============ */
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-top: 50px;
+  }
+  .feature-card {
+    padding: 36px 30px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%),
+                rgba(56,189,248,0.12), transparent 60%);
+    transition: opacity .25s ease;
+  }
+  .feature-card:hover { transform: translateY(-4px); border-color: rgba(56,189,248,0.35); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(139,92,246,0.18));
+    border: 1px solid rgba(56,189,248,0.25);
+    margin-bottom: 20px; font-size: 24px;
+  }
+  .feature-card p { color: #94a3b8; font-size: 15px; }
+
+  /* ============ Protocols ============ */
+  .protocols-wrap {
+    margin-top: 50px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: stretch;
+  }
+  .protocol-hero {
+    padding: 40px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(139,92,246,0.10));
+    border: 1px solid rgba(56,189,248,0.25);
+  }
+  .protocol-hero h3 { font-size: 26px; margin-bottom: 14px; }
+  .protocol-hero p { color: #cbd5e1; }
+  .protocol-tags {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px;
+  }
+  .protocol-tag {
+    padding: 10px 18px; font-size: 14px; font-weight: 600;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 999px; color: #e2e8f0;
+  }
+  .protocol-tag.featured {
+    background: linear-gradient(135deg, rgba(56,189,248,0.22), rgba(139,92,246,0.22));
+    border-color: rgba(56,189,248,0.40);
+    color: #f0f9ff;
+  }
+  .protocol-list { display: flex; flex-direction: column; gap: 14px; }
+  .protocol-item {
+    padding: 22px 24px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    display: flex; align-items: center; gap: 18px;
+    transition: border-color .2s, background .2s;
+  }
+  .protocol-item:hover { border-color: rgba(56,189,248,0.30); background: rgba(56,189,248,0.04); }
+  .protocol-item .name { font-weight: 700; font-size: 17px; color: #f1f5f9; }
+  .protocol-item .desc { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+  .protocol-bullet {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #a78bfa);
+    box-shadow: 0 0 12px rgba(56,189,248,0.6);
+    flex-shrink: 0;
+  }
+
+  /* ============ Apps Section ============ */
+  .apps-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px;
+    margin-top: 40px;
+  }
+  .app-card {
+    aspect-ratio: 1 / 1.05;
+    padding: 24px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; text-align: center;
+    transition: transform .25s, border-color .25s;
+  }
+  .app-card:hover { transform: translateY(-3px); border-color: rgba(56,189,248,0.35); }
+  .app-icon { font-size: 36px; }
+  .app-name { font-weight: 600; font-size: 15px; }
+
+  /* ============ Coverage / World ============ */
+  .coverage-banner {
+    margin-top: 50px;
+    padding: 50px 40px;
+    border-radius: 22px;
+    background:
+      radial-gradient(60% 80% at 80% 30%, rgba(56,189,248,0.18), transparent 60%),
+      radial-gradient(50% 70% at 20% 80%, rgba(139,92,246,0.16), transparent 60%),
+      rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center;
+  }
+  .coverage-numbers { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 22px; }
+  .coverage-numbers .big {
+    font-size: 56px; font-weight: 800;
+    background: linear-gradient(135deg, #34d399, #38bdf8);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    line-height: 1;
+  }
+  .coverage-numbers .sub { font-size: 14px; color: #94a3b8; margin-top: 4px; }
+  .country-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 14px;
+  }
+  .country-tag {
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    font-size: 13px; color: #cbd5e1; text-align: center;
+    transition: background .2s, color .2s;
+  }
+  .country-tag:hover { background: rgba(56,189,248,0.10); color: #e0f2fe; }
+
+  /* ============ Advanced Features ============ */
+  .advanced-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+    margin-top: 50px;
+  }
+  .advanced-card {
+    padding: 36px 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    display: grid; grid-template-columns: 56px 1fr; gap: 22px;
+    transition: border-color .25s, transform .25s;
+  }
+  .advanced-card:hover { border-color: rgba(56,189,248,0.30); transform: translateY(-2px); }
+  .advanced-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(56,189,248,0.18));
+    border: 1px solid rgba(56,185,129,0.25);
+    font-size: 26px;
+  }
+  .advanced-card h3 { margin-bottom: 8px; font-size: 19px; }
+  .advanced-card p { color: #94a3b8; font-size: 14.5px; }
+
+  /* ============ Security Highlights ============ */
+  .security-strip {
+    margin-top: 60px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    border-radius: 18px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.025);
+  }
+  .security-cell {
+    padding: 32px 28px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+  }
+  .security-cell:last-child { border-right: none; }
+  .security-cell .ico { font-size: 28px; margin-bottom: 12px; }
+  .security-cell .title { font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+  .security-cell .desc { font-size: 13px; color: #94a3b8; }
+
+  /* ============ Section Header (Centered) ============ */
+  .section-head { text-align: center; max-width: 760px; margin: 0 auto 10px; }
+  .section-head .lead { margin: 0 auto; }
+
+  /* ============ Footer ============ */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 50px 0; margin-top: 60px;
+    text-align: center; color: #64748b; font-size: 14px;
+  }
+  footer .logo { font-size: 22px; margin-bottom: 12px; }
+
+  /* ============ Responsive ============ */
+  @media (max-width: 960px) {
+    .nav-links { display: none; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .features-grid { grid-template-columns: 1fr; }
+    .protocols-wrap { grid-template-columns: 1fr; }
+    .apps-grid { grid-template-columns: repeat(3, 1fr); }
+    .coverage-banner { grid-template-columns: 1fr; }
+    .country-grid { grid-template-columns: repeat(3, 1fr); }
+    .advanced-grid { grid-template-columns: 1fr; }
+    .security-strip { grid-template-columns: repeat(2, 1fr); }
+    .security-cell { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    section { padding: 80px 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- ==== Nav ==== -->
+  <nav>
+    <div class="nav-inner">
+      <div class="logo">Astrill<span class="dot">.</span>VPN</div>
+      <div class="nav-links">
+        <a href="#features">核心特性</a>
+        <a href="#protocols">VPN 协议</a>
+        <a href="#apps">客户端</a>
+        <a href="#network">全球网络</a>
+        <a href="#advanced">高级功能</a>
+      </div>
+      <div class="badge">技术领先 · 自研协议</div>
+    </div>
+  </nav>
+
+  <!-- ==== Hero ==== -->
+  <section class="hero">
+    <div class="container">
+      <div class="eyebrow">Premium VPN Technology</div>
+      <h1>
+        快速、安全、匿名的<br />
+        <span class="grad">下一代加密网络</span>
+      </h1>
+      <p class="lead">
+        Astrill VPN 在全球 56 个国家、142 个城市部署超高性能专用服务器集群，
+        以自研协议、零日志架构和企业级加密为基础，重新定义无国界的互联网访问体验。
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">56</div><div class="label">覆盖国家</div></div>
+        <div class="hero-stat"><div class="num">142</div><div class="label">服务城市</div></div>
+        <div class="hero-stat"><div class="num">9+</div><div class="label">VPN 协议</div></div>
+        <div class="hero-stat"><div class="num">24/7</div><div class="label">全天候支持</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Core Features ==== -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">为什么选择 Astrill</div>
+        <h2>四大核心能力，让连接快、稳、隐、广</h2>
+        <p class="lead">从底层网络到应用层加密，每一层都为速度与隐私同时优化。</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🕶️</div>
+          <h3>匿名浏览</h3>
+          <p>真实 IP 被完全隐藏，告别行为追踪与广告画像，让在线身份回归绝对私密。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>端到端加密</h3>
+          <p>SSL 加密隧道与多协议组合保护流量，防御黑客、嗅探与中间人攻击。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>专用高速节点</h3>
+          <p>采用专用物理服务器而非廉价 VPS，全程低延迟、高吞吐、零拥塞。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>多设备连接</h3>
+          <p>家庭内最多 5 台设备同时连接，覆盖手机、平板、电脑、电视与游戏机。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3>无地理限制</h3>
+          <p>无论身处何方，皆可像在家一样访问熟悉的服务、平台与应用生态。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧭</div>
+          <h3>智能路由</h3>
+          <p>智能模式自动识别国内外流量，本地直连、国际加密，浏览体验更顺畅。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Protocols ==== -->
+  <section id="protocols">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">VPN Protocols</div>
+        <h2>支持业内全部主流协议</h2>
+        <p class="lead">从行业标准到自研增强协议，按场景灵活切换，兼顾速度、稳定与隐蔽性。</p>
+      </div>
+
+      <div class="protocols-wrap">
+        <div class="protocol-hero">
+          <h3>三大自研协议</h3>
+          <p>OpenWeb、StealthVPN 与定制版 Wireguard 由 Astrill 工程团队完全自研，
+            突破传统协议指纹识别，在复杂网络环境下实现"看不见"的稳定连接。</p>
+          <div class="protocol-tags">
+            <span class="protocol-tag featured">OpenWeb</span>
+            <span class="protocol-tag featured">StealthVPN</span>
+            <span class="protocol-tag featured">Wireguard</span>
+          </div>
+        </div>
+
+        <div class="protocol-list">
+          <div class="protocol-item">
+            <div class="protocol-bullet"></div>
+            <div>
+              <div class="name">OpenVPN</div>
+              <div class="desc">行业标准开源协议，安全成熟、兼容性强</div>
+            </div>
+          </div>
+          <div class="protocol-item">
+            <div class="protocol-bullet"></div>
+            <div>
+              <div class="name">IKEv2 / IPsec</div>
+              <div class="desc">移动场景首选，切换网络时保持连接不断</div>
+            </div>
+          </div>
+          <div class="protocol-item">
+            <div class="protocol-bullet"></div>
+            <div>
+              <div class="name">Cisco IPsec · L2TP / IPsec · SSTP</div>
+              <div class="desc">企业级协议矩阵，匹配各类合规与设备需求</div>
+            </div>
+          </div>
+          <div class="protocol-item">
+            <div class="protocol-bullet"></div>
+            <div>
+              <div class="name">OpenConnect</div>
+              <div class="desc">高兼容性协议，适配多平台与受限网络环境</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Apps ==== -->
+  <section id="apps">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Native Clients</div>
+        <h2>覆盖所有终端，开箱即用</h2>
+        <p class="lead">桌面、移动端到路由器全平台原生应用，统一的设计语言与一致的连接体验。</p>
+      </div>
+
+      <div class="apps-grid">
+        <div class="app-card"><div class="app-icon">🪟</div><div class="app-name">Windows</div></div>
+        <div class="app-card"><div class="app-icon">🍎</div><div class="app-name">macOS</div></div>
+        <div class="app-card"><div class="app-icon">🐧</div><div class="app-name">Linux</div></div>
+        <div class="app-card"><div class="app-icon">📱</div><div class="app-name">iOS</div></div>
+        <div class="app-card"><div class="app-icon">🤖</div><div class="app-name">Android</div></div>
+        <div class="app-card"><div class="app-icon">📡</div><div class="app-name">路由器</div></div>
+      </div>
+
+      <div class="security-strip" style="margin-top: 50px;">
+        <div class="security-cell">
+          <div class="ico">🔘</div>
+          <div class="title">一键连接</div>
+          <div class="desc">大尺寸 ON/OFF 按钮，所有设置触手可及</div>
+        </div>
+        <div class="security-cell">
+          <div class="ico">🧩</div>
+          <div class="title">智能模式</div>
+          <div class="desc">国际流量走 VPN，本地流量直连提速</div>
+        </div>
+        <div class="security-cell">
+          <div class="ico">🎯</div>
+          <div class="title">应用过滤器</div>
+          <div class="desc">按应用决定走 VPN 还是直连，灵活精细</div>
+        </div>
+        <div class="security-cell">
+          <div class="ico">🔗</div>
+          <div class="title">VPN 共享</div>
+          <div class="desc">用电脑充当网关，分享给手机、电视与主机</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Coverage ==== -->
+  <section id="network">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Global Network</div>
+        <h2>遍布五大洲的高性能骨干</h2>
+        <p class="lead">从亚洲到欧美再到大洋洲，专用服务器组成的全球骨干网络保障稳定低延迟。</p>
+      </div>
+
+      <div class="coverage-banner">
+        <div>
+          <div class="coverage-numbers">
+            <div>
+              <div class="big">56</div>
+              <div class="sub">覆盖国家 / 地区</div>
+            </div>
+            <div>
+              <div class="big">142</div>
+              <div class="sub">城市级节点</div>
+            </div>
+          </div>
+          <p style="color:#cbd5e1; font-size:15px;">
+            所有节点均为 Astrill 直营专用物理服务器，避免与第三方共享带宽，
+            从根本上保证速度、稳定性与隐私边界。
+          </p>
+        </div>
+        <div class="country-grid">
+          <div class="country-tag">🇺🇸 美国</div>
+          <div class="country-tag">🇯🇵 日本</div>
+          <div class="country-tag">🇰🇷 韩国</div>
+          <div class="country-tag">🇭🇰 香港</div>
+          <div class="country-tag">🇹🇼 台湾</div>
+          <div class="country-tag">🇸🇬 新加坡</div>
+          <div class="country-tag">🇬🇧 英国</div>
+          <div class="country-tag">🇩🇪 德国</div>
+          <div class="country-tag">🇫🇷 法国</div>
+          <div class="country-tag">🇮🇹 意大利</div>
+          <div class="country-tag">🇪🇸 西班牙</div>
+          <div class="country-tag">🇳🇱 荷兰</div>
+          <div class="country-tag">🇨🇭 瑞士</div>
+          <div class="country-tag">🇸🇪 瑞典</div>
+          <div class="country-tag">🇨🇦 加拿大</div>
+          <div class="country-tag">🇦🇺 澳大利亚</div>
+          <div class="country-tag">🇧🇷 巴西</div>
+          <div class="country-tag">🇮🇳 印度</div>
+          <div class="country-tag">🇹🇷 土耳其</div>
+          <div class="country-tag">🇲🇽 墨西哥</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Advanced ==== -->
+  <section id="advanced">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">Advanced Capabilities</div>
+        <h2>面向极客与企业的进阶能力</h2>
+        <p class="lead">从多跳路由到洋葱网络叠加，从端口转发到专用 IP，Astrill 提供的不只是"连得上"。</p>
+      </div>
+
+      <div class="advanced-grid">
+        <div class="advanced-card">
+          <div class="advanced-icon">🌀</div>
+          <div>
+            <h3>Multi-hop 多跳 VPN</h3>
+            <p>从入口服务器进入网络，通过另一台出口服务器返回，
+              将链路拆分为两段独立加密，实现更高级别的匿名性与抗审查能力。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">🧅</div>
+          <div>
+            <h3>Onion over VPN</h3>
+            <p>无需在本地安装 Tor，即可直接访问 .onion 域与深网内容；
+              同时彻底隐藏使用 Tor 的事实，绕开 ISP 与运营商的流量识别。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">🔓</div>
+          <div>
+            <h3>StealthVPN 隐形协议</h3>
+            <p>通过深度协议混淆，让 VPN 流量在中间设备看来与普通 HTTPS 无异，
+              在严格审查与企业防火墙环境中保持稳定可用。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">🚪</div>
+          <div>
+            <h3>端口转发 / Port Forwarding</h3>
+            <p>从外网通过 Astrill IP 访问内网设备与服务，
+              加速 P2P、Torrent、Skype、TeamViewer 等需直连的应用与场景。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">🪪</div>
+          <div>
+            <h3>专用 IP / Dedicated IP</h3>
+            <p>独享一个不与他人共用的固定 IP，
+              支持完整端口转发，远程办公、跨境业务、自建服务全场景适用。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">⛔</div>
+          <div>
+            <h3>Kill Switch & App Guard</h3>
+            <p>VPN 一旦异常断开，立即阻止选定应用访问公网,
+              杜绝真实 IP 在重连缝隙中的任何泄露风险。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">📶</div>
+          <div>
+            <h3>VPN 共享网关</h3>
+            <p>把 PC / Mac / Linux 变成 VPN 路由器，
+              将加密连接分发给智能电视、游戏主机、IoT 设备等不支持 VPN 客户端的硬件。</p>
+          </div>
+        </div>
+
+        <div class="advanced-card">
+          <div class="advanced-icon">⭐</div>
+          <div>
+            <h3>VIP 加速节点</h3>
+            <p>专门面向亚洲用户与游戏玩家优化的高级线路，
+              覆盖香港、台湾、日本、新加坡、韩国与中国大陆方向，延迟更稳定。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Trust / Privacy Strip ==== -->
+  <section style="padding-top: 0;">
+    <div class="container">
+      <div class="section-head" style="margin-bottom: 30px;">
+        <div class="eyebrow">Privacy by Design</div>
+        <h2>用工程方式守护你的隐私</h2>
+      </div>
+
+      <div class="security-strip">
+        <div class="security-cell">
+          <div class="ico">🚫</div>
+          <div class="title">零日志策略</div>
+          <div class="desc">服务器架构层面无法保存访问记录，断连即清空</div>
+        </div>
+        <div class="security-cell">
+          <div class="ico">♾️</div>
+          <div class="title">无限速率与带宽</div>
+          <div class="desc">无限速、无限切换、无限传输，不限设备数量</div>
+        </div>
+        <div class="security-cell">
+          <div class="ico">🪙</div>
+          <div class="title">支持比特币</div>
+          <div class="desc">匿名支付通道，从付款到使用全链路保护身份</div>
+        </div>
+        <div class="security-cell">
+          <div class="ico">💬</div>
+          <div class="title">全天候在线支持</div>
+          <div class="desc">7×24 在线客服、邮件与电话支持，全年无休</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==== Footer ==== -->
+  <footer>
+    <div class="container">
+      <div class="logo">Astrill<span class="dot">.</span>VPN</div>
+      <div>技术领先的全球加密网络 · 56 国 142 城专用节点</div>
+      <div style="margin-top: 12px; opacity: .6;">© Astrill VPN. 本页面仅作功能与技术介绍。</div>
+    </div>
+  </footer>
+
+  <script>
+    // Subtle cursor-tracking glow on feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+      });
+    });
+  </script>
+</body>
+</html>
